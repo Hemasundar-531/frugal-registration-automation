@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Registration Form - Frugal Test</title>
+  <style>
+    /* Simple clean styling */
+    body { font-family: Arial, sans-serif; background:#f5f7fb; margin:0; padding:20px; }
+    .container { max-width:700px; margin:18px auto; background:#fff; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); padding:20px; }
+    h2 { margin-top:0; }
+    .row { display:flex; gap:12px; }
+    .col { flex:1; display:flex; flex-direction:column; margin-bottom:12px; }
+    label { font-size:14px; margin-bottom:6px; }
+    input[type="text"], input[type="email"], input[type="password"], textarea, select {
+      padding:10px; border:1px solid #d0d7df; border-radius:6px; font-size:14px;
+    }
+    textarea { min-height:80px; resize:vertical; }
+    .small { font-size:13px; color:#555; }
+    .error { border-color:#e04f5f !important; }
+    .error-text { color:#e04f5f; font-size:13px; margin-top:4px; display:none; }
+    .success-text { color: #1f9d55; font-size:14px; display:none; margin-bottom:12px; }
+    .password-meter { height:8px; background:#eee; border-radius:6px; overflow:hidden; margin-top:6px; }
+    .password-bar { height:8px; width:0%; transition:width .2s; }
+    .btn { padding:10px 16px; background:#2b7cff; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:15px; }
+    .btn:disabled { background:#9abcf9; cursor:not-allowed; }
+    .inline { display:flex; align-items:center; gap:8px; }
+    .center { text-align:center; margin-top:10px; }
+    .notice { font-size:13px; color:#333; margin-bottom:8px; }
+    .field { margin-bottom:8px; }
+  </style>
+</head>
+<body>
+  <div class="container" role="main">
+    <h2>Registration Form</h2>
+    <div id="success" class="success-text">Registration Successful! Your profile has been submitted successfully.</div>
+
+    <form id="regForm" novalidate>
+      <div class="row">
+        <div class="col field">
+          <label for="firstName">First Name *</label>
+          <input id="firstName" name="firstName" type="text" />
+          <div id="errFirstName" class="error-text">First name is required.</div>
+        </div>
+
+        <div class="col field">
+          <label for="lastName">Last Name *</label>
+          <input id="lastName" name="lastName" type="text" />
+          <div id="errLastName" class="error-text">Last name is required.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col field">
+          <label for="email">Email *</label>
+          <input id="email" name="email" type="email" />
+          <div id="errEmail" class="error-text">Enter a valid non-disposable email.</div>
+        </div>
+        <div class="col field">
+          <label for="phone">Phone Number *</label>
+          <input id="phone" name="phone" type="text" placeholder="+91xxxxxxxxxx or 0091xxxxxxxxx" />
+          <div id="errPhone" class="error-text">Enter a valid phone number with country code if country selected.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col field">
+          <label>Gender *</label>
+          <div class="inline">
+            <label><input type="radio" name="gender" value="Male" /> Male</label>
+            <label><input type="radio" name="gender" value="Female" /> Female</label>
+            <label><input type="radio" name="gender" value="Other" /> Other</label>
+          </div>
+          <div id="errGender" class="error-text">Please select gender.</div>
+        </div>
+
+        <div class="col field">
+          <label for="age">Age</label>
+          <input id="age" name="age" type="text" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="address">Address</label>
+        <textarea id="address" name="address"></textarea>
+      </div>
+
+      <div class="row">
+        <div class="col field">
+          <label for="country">Country</label>
+          <select id="country">
+            <option value="">-- Select Country --</option>
+            <option value="IN">India</option>
+            <option value="US">United States</option>
+            <option value="AE">United Arab Emirates</option>
+          </select>
+        </div>
+
+        <div class="col field">
+          <label for="state">State</label>
+          <select id="state"><option value="">-- Select State --</option></select>
+        </div>
+
+        <div class="col field">
+          <label for="city">City</label>
+          <select id="city"><option value="">-- Select City --</option></select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col field">
+          <label for="password">Password *</label>
+          <input id="password" name="password" type="password" />
+          <div class="password-meter"><div id="passwordBar" class="password-bar"></div></div>
+          <div id="errPassword" class="error-text">Password must be at least 6 characters.</div>
+        </div>
+
+        <div class="col field">
+          <label for="confirmPassword">Confirm Password *</label>
+          <input id="confirmPassword" name="confirmPassword" type="password" />
+          <div id="errConfirm" class="error-text">Passwords do not match.</div>
+        </div>
+      </div>
+
+      <div class="field inline">
+        <label><input id="terms" type="checkbox" /> I accept Terms & Conditions *</label>
+      </div>
+      <div id="errTerms" class="error-text">You must accept terms.</div>
+
+      <div class="center">
+        <button id="submitBtn" class="btn" type="submit" disabled>Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Simple country-state-city data
+    const locationData = {
+      IN: {
+        "Gujarat": ["Vadodara", "Ahmedabad", "Surat"],
+        "Telangana": ["Hyderabad", "Warangal"],
+        "Maharashtra": ["Mumbai", "Pune"]
+      },
+      US: {
+        "California": ["Los Angeles", "San Francisco"],
+        "New York": ["New York City", "Buffalo"]
+      },
+      AE: {
+        "Dubai": ["Dubai City"],
+        "Abu Dhabi": ["Abu Dhabi City"]
+      }
+    };
+
+    const disposableDomains = ["tempmail.com","mailinator.com","10minutemail.com"];
+
+    const countryCodes = { IN: "+91", US: "+1", AE:"+971" };
+
+    const $ = id => document.getElementById(id);
+
+    const firstName = $('firstName'), lastName = $('lastName'), email = $('email'),
+          phone = $('phone'), genderEls = document.getElementsByName('gender'),
+          password = $('password'), confirmPassword = $('confirmPassword'),
+          country = $('country'), state = $('state'), city = $('city'),
+          terms = $('terms'), submitBtn = $('submitBtn'),
+          success = $('success');
+
+    function resetErrors() {
+      document.querySelectorAll('.error-text').forEach(e => e.style.display = 'none');
+      document.querySelectorAll('input, select, textarea').forEach(el => el.classList.remove('error'));
+      success.style.display = 'none';
+    }
+
+    function showError(elId, text) {
+      const el = document.getElementById(elId);
+      el.textContent = text;
+      el.style.display = 'block';
+    }
+
+    function validateEmail(val) {
+      if (!val) return false;
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!re.test(val)) return false;
+      const domain = val.split('@')[1].toLowerCase();
+      if (disposableDomains.includes(domain)) return false;
+      return true;
+    }
+
+    function validatePhone(val) {
+      if (!val) return false;
+      // Very simple check: digits and + allowed, length 7-15
+      const cleaned = val.replace(/[\s\-]/g,'');
+      const m = cleaned.match(/^\+?\d{7,15}$/);
+      return !!m;
+    }
+
+    function getSelectedGender() {
+      for (let g of genderEls) if (g.checked) return g.value;
+      return null;
+    }
+
+    function evaluatePassword(pw) {
+      let score = 0;
+      if (pw.length >= 6) score += 1;
+      if (/[A-Z]/.test(pw)) score += 1;
+      if (/[0-9]/.test(pw)) score += 1;
+      if (/[^A-Za-z0-9]/.test(pw)) score += 1;
+      return score; // 0-4
+    }
+
+    function updatePasswordMeter() {
+      const score = evaluatePassword(password.value);
+      const bar = $('passwordBar');
+      bar.style.width = (score * 25) + '%';
+      // color
+      bar.style.background = score <=1 ? '#f07a7a' : score===2 ? '#f3c26b' : '#8bd78b';
+    }
+
+    function populateStateCity() {
+      const c = country.value;
+      state.innerHTML = '<option value="">-- Select State --</option>';
+      city.innerHTML = '<option value="">-- Select City --</option>';
+      if (!c || !locationData[c]) return;
+      Object.keys(locationData[c]).forEach(s => {
+        const opt = document.createElement('option'); opt.value = s; opt.textContent = s; state.appendChild(opt);
+      });
+    }
+
+    function populateCity() {
+      city.innerHTML = '<option value="">-- Select City --</option>';
+      const c = country.value, s = state.value;
+      if (!c || !s || !locationData[c] || !locationData[c][s]) return;
+      locationData[c][s].forEach(ct => {
+        const opt = document.createElement('option'); opt.value = ct; opt.textContent = ct; city.appendChild(opt);
+      });
+    }
+
+    function checkFormValidity() {
+      resetErrors();
+      let valid = true;
+
+      if (!firstName.value.trim()) { showError('errFirstName','First name is required.'); firstName.classList.add('error'); valid=false; }
+      if (!lastName.value.trim())  { showError('errLastName','Last name is required.'); lastName.classList.add('error'); valid=false; }
+
+      if (!validateEmail(email.value.trim())) { showError('errEmail','Enter a valid non-disposable email.'); email.classList.add('error'); valid=false; }
+      if (!validatePhone(phone.value.trim())) { showError('errPhone','Enter a valid phone number with country code if country selected.'); phone.classList.add('error'); valid=false; }
+
+      if (!getSelectedGender()) { showError('errGender','Please select gender.'); valid=false; }
+
+      if (password.value.length < 6) { showError('errPassword','Password must be at least 6 characters.'); password.classList.add('error'); valid=false; }
+
+      if (confirmPassword.value !== password.value) { showError('errConfirm','Passwords do not match.'); confirmPassword.classList.add('error'); valid=false; }
+
+      if (!terms.checked) { showError('errTerms','You must accept terms.'); valid=false; }
+
+      submitBtn.disabled = !valid;
+      return valid;
+    }
+
+    // events
+    country.addEventListener('change', () => { populateStateCity(); checkFormValidity(); });
+    state.addEventListener('change', () => { populateCity(); checkFormValidity(); });
+
+    [firstName,lastName,email,phone,age,address,password,confirmPassword].forEach(el => {
+      el.addEventListener('input', () => { updatePasswordMeter(); checkFormValidity(); });
+    });
+
+    document.querySelectorAll('input[name="gender"]').forEach(e => e.addEventListener('change', checkFormValidity));
+    terms.addEventListener('change', checkFormValidity);
+
+    document.getElementById('regForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (!checkFormValidity()) return;
+      // simulate success
+      success.style.display = 'block';
+      // reset form after 1.2s to show success message
+      setTimeout(() => {
+        document.getElementById('regForm').reset();
+        $('passwordBar').style.width='0%';
+        submitBtn.disabled = true;
+      }, 800);
+    });
+
+    // init
+    populateStateCity();
+    updatePasswordMeter();
+  </script>
+</body>
+</html>
